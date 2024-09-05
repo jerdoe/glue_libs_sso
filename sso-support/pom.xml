@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.medianovens.aws.sdkv1.auth</groupId>
+    <artifactId>sso-support</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>AWS-SDK1 SSO-SUPPORT</name>
+    <properties>
+        <maven.compiler.release>8</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <aws.sdk.version>1.12.128</aws.sdk.version>
+        <aws.sdk.v2.sso.version>2.21.24</aws.sdk.v2.sso.version>
+    </properties>
+    <dependencies>
+        <!-- AWS SDK for Java dependency -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${aws.sdk.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- AWS SDK v2 for Java SSO lib -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sso</artifactId>
+            <version>${aws.sdk.v2.sso.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- AWS SDK v2 for Java SSOOIDC lib -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ssooidc</artifactId>
+            <version>${aws.sdk.v2.sso.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+            This dependency is commented out because only a reference to
+            org.apache.hadoop.conf.Configuration is required for compilation,
+            but it is not used in the actual implementation.
+            A stub is utilized instead to avoid unnecessary inclusion of
+            external libraries during the build process.
+        -->
+        <!--<dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>3.3.3</version>
+        </dependency>-->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <compileSourceRoots>
+                        <compileSourceRoot>src/main/java</compileSourceRoot>
+                        <compileSourceRoot>src/main/stubs</compileSourceRoot>
+                    </compileSourceRoots>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/amazonaws/**</exclude>
+                        <exclude>org/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

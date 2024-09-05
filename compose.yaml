@@ -1,0 +1,58 @@
+name: aws-glue
+
+services:
+  aws-glue:
+    image: "medianovens/aws-glue-libs-sso:1.0.0"
+    container_name: "aws-glue"
+    ports:
+      - "4040:4040"
+      - "18080:18080"
+      - "8998:8998"
+      - "8888:8888"
+    init: true
+    stdin_open: true
+    tty: true
+    environment:
+      TERM: "xterm-256color"
+      # Uncomment the line below if you plan to use a specific AWS Profile
+      #AWS_PROFILE: "my_aws_profile"
+      DISABLE_SSL: "true"
+    build:
+      context: .
+      args:
+        GLUE_USER: "${GLUE_USER}"
+        MAVEN_DOCKER_IMAGE: "${MAVEN_DOCKER_IMAGE}"
+        AWSGLUE_DOCKER_IMAGE: "${AWSGLUE_DOCKER_IMAGE}"
+        AWSGLUE_LIBS_DIR: "${GLUE_LIBS_DIR}"
+    volumes:
+      - vol_aws:${GLUE_AWS}
+      - vol_workspace:${GLUE_WORKSPACE}
+
+      # Uncomment the line below if you want to reuse your existing aws config
+      # (you may need to run 'chmod g+rw' on the proper '.aws/cache/xxxx.json file'
+      # if your host user id does not match the container glue_user id)
+      # Or you can run 'aws2 configure sso' and 'aws2 sso login' from the container.
+
+      #- vol_aws_custom:${GLUE_AWS}
+
+    # Uncomment the line below if you want to automatically start jupyter server
+    # on `docker compose up`
+
+    #command: ["${GLUE_HOME}/jupyter/jupyter_start.sh"]
+
+volumes:
+  vol_aws:
+
+  vol_aws_custom:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${HOME}/.aws"
+      o: bind
+
+  vol_workspace:
+    driver: local
+    driver_opts:
+      type: none
+      device: "./binds/workspace/"
+      o: bind
