@@ -39,6 +39,7 @@ ARG GLUE_AWS
 
 COPY --chown=${GLUE_USER}:root --from=build-jar-sso "/project/target/*.jar" "${GLUE_LIBS_DIR}/"
 COPY --chown=${GLUE_USER}:root "update-core-site-xml.py" "${GLUE_HOME}/.local/bin/"
+COPY --chown=${GLUE_USER}:root "configure-glue-region.py" "${GLUE_HOME}/.local/bin/"
 
 RUN <<EOF
   # Update hadoop config file to use sso crendentials providers

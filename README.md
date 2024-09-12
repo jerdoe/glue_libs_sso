@@ -52,22 +52,22 @@ of [Developing and testing AWS Glue job scripts locally, using a Docker image | 
    cd glue_libs_sso
    ```
 
-2. **Optional (only if using Docker Desktop): Add the workspace folder to the file-sharing resources**
+1. **Optional (only if using Docker Desktop): Add the workspace folder to the file-sharing resources**
    
    - Docker Desktop -> Settings -> Resources -> File sharing -> Virtual file shares -> Browse
    - Select `glue_libs_sso/binds/workspace`, then click on the `+` symbol
      
-3. **Run the container**
+1. **Run the container**
 
    ```bash
    docker compose up -d   
    ```
-4. **Configure SSO**
+1. **Configure SSO**
    ```bash
    # Do not miss the quotes after `bash -lc`
    docker compose exec aws-glue bash -lc 'aws2 configure sso'
    ```
-5. **Optional: Specify your custom AWS Profile (only if not using the default aws profile)**
+1. **Optional: Specify your custom AWS Profile (only if not using the default aws profile)**
    - Open compose.yaml in an editor:
      
      ```bash
@@ -88,14 +88,24 @@ of [Developing and testing AWS Glue job scripts locally, using a Docker image | 
      ```
    - Save your changes
      
-5. **Run your tasks**
-   - To open an interactive shell within the container, run the following command:
+1. **Configure the Glue Endpoint Region**
+   - Open an interactive shell inside the container and run the configuration script:
 
      ```bash
      docker compose exec aws-glue bash -l
+     configure-glue-region.py <region>
      ```
 
-   - or you can run your tasks directly
+   - Alternatively, you can run the script directly:
+
+     ```bash
+     # DO NOT MISS THE QUOTES
+     docker compose exec aws-glue bash -lc 'configure-glue-region.py <region>'
+     ```
+
+
+1. **Run your tasks**
+   - You can run tasks in an interactive shell or via the `docker compose exec` command:
 
      ```bash     
      # The file `sample.py` on the host would be located at `glue_libs_sso/binds/workspace/src/sample.py`
