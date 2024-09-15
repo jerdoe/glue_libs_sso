@@ -17,6 +17,16 @@ This script generates two configuration files:
 
 These files will be packaged into a JAR named `glue-conf.jar`, which will be saved to `~/aws_glue_libs/jars`,
 overriding any existing JAR with the same name.
+
+When there is no such a jar in the classpath, AWS Glue uses the Default AWS Credentials Provider Chain and the
+Default AWS Region Provider Chain.
+
+For more information, see:
+- https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default
+- https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/DefaultAWSCredentialsProviderChain.html
+
+- https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html#default-region-provider-chain
+- https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/regions/providers/DefaultAwsRegionProviderChain.html
 """
 import sys
 import os
