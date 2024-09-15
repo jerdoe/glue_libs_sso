@@ -51,8 +51,8 @@ from xml.etree.ElementTree import Element, tostring, canonicalize
 
 parser = argparse.ArgumentParser(description=prog_desc, epilog=prog_epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
 
-default_core_site_xml: str = f"{os.environ['HADOOP_CONF_DIR']}/core-site.xml"
-parser.add_argument('-f', '--file', metavar='<file_pathname>', default=default_core_site_xml, help='the pathname to the newly generated or updated hadoop configuration file (default: ${HADOOP_CONF_DIR}/core-site.xml)')
+default_core_site_xml: str = f"{os.environ['HADOOP_CONF_DIR']}/core-site.xml" if 'HADOOP_CONF_DIR' in os.environ else 'core-site.xml'
+parser.add_argument('-f', '--file', metavar='<file_pathname>', default=default_core_site_xml, help='the pathname to the newly generated or updated hadoop configuration file (default: either `${HADOOP_CONF_DIR}/core-site.xml` OR `./core-site.xml` if ${HADOOP_CONF_DIR} is not defined)')
 
 parser.add_argument('-u', '--update', action='store_true', help='required to edit an existing file at <file_pathname>')
 parser.add_argument('-j', '--jar', metavar='<output_jar_pathname>', help='also, creates a JAR containing the new Hadoop configuration file')
