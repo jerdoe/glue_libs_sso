@@ -38,12 +38,15 @@ ARG GLUE_HOME
 ARG GLUE_AWS
 
 COPY --chown=${GLUE_USER}:root --from=build-jar-sso "/project/target/*.jar" "${GLUE_LIBS_DIR}/"
-COPY --chown=${GLUE_USER}:root "update-core-site-xml.py" "${GLUE_HOME}/.local/bin/"
+COPY --chown=${GLUE_USER}:root "edit-hadoop-config-sso.py" "${GLUE_HOME}/.local/bin/"
 COPY --chown=${GLUE_USER}:root "configure-glue-region.py" "${GLUE_HOME}/.local/bin/"
 
 RUN <<EOF
+  # Make a backup of core-site.xml
+  cp ${GLUE_HOME}/spark/conf/core-site.xml ${GLUE_HOME}/spark/conf/core-site.xml.orig
+
   # Update hadoop config file to use sso crendentials providers
-  "${GLUE_HOME}/.local/bin/update-core-site-xml.py"
+  "${GLUE_HOME}/.local/bin/edit-hadoop-config-sso.py" -u
 
   # Change dir to ${GLUE_HOME}
   cd "${GLUE_HOME}"
