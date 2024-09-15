@@ -1,25 +1,23 @@
 #!/usr/local/bin/python3
-"""
-Configure AWS Glue to use the SSO credentials provider.
+prog_desc :str = 'Builds a JAR that configures AWS Glue to include SSO in the authentication chain'
 
+prog_epilog :str = """
 This script generates two configuration files:
 
 1. **glue-default.conf** with the following content:
 {
   credentials_provider: "com.medianovens.aws.sdkv1.auth.sso.DefaultAWSCredentialsProviderChainWithSSO",
-  region: <sys.argv[1]>,
+  region: <region>,
   glue {
-    endpoint: "https://glue.<sys.argv[1]>.amazonaws.com"
+    endpoint: "https://glue.<region>.amazonaws.com"
   }
 }
 
 2. **glue-override.conf**, an empty file.
 
-These files will be packaged into a JAR named `glue-conf.jar`, which will be saved to `~/aws_glue_libs/jars`,
-overriding any existing JAR with the same name.
+These files will be packaged into a JAR saved to <output_jar>, which should be part of the AWS Glue classpath.
 
-When there is no such a jar in the classpath, AWS Glue uses the Default AWS Credentials Provider Chain and the
-Default AWS Region Provider Chain.
+If not present, AWS Glue will use the Default AWS Credentials Provider Chain and the Default AWS Region Provider Chain.
 
 For more information, see:
 - https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default
@@ -31,32 +29,35 @@ For more information, see:
 import sys
 import os
 import zipfile
+import argparse
+import textwrap
+
+class RawDescArgDefaultsFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
 
 def main():
-    script_name = sys.argv[0]
+    parser = argparse.ArgumentParser(description=prog_desc, epilog=prog_epilog, formatter_class=RawDescArgDefaultsFormatter)
+    parser.add_argument('region', metavar='<region>', help='the region to use for glue endpoint configuration')
+    parser.add_argument('-o', '--output', metavar='<output_jar>', default="~/aws-glue-libs/jars/glue-conf.jar",
+                        help='the pathname of the output jar', dest='output_jar')
 
-    # Check if a region is provided as an argument
-    if len(sys.argv) != 2:
-        print(f"Usage: {script_name} <region>")
-        sys.exit(1)
+    args = parser.parse_args()
 
     # Get the region from the argument
-    region = sys.argv[1]
+    region = args.region
 
-    # Paths for the configuration files and JAR
-    glue_jars_dir = os.path.expanduser("~/aws-glue-libs/jars")
-    jar_path = os.path.join(glue_jars_dir, "glue-conf.jar")
+    jar_path = os.path.expanduser(args.output_jar)
 
     # Content for glue-default.conf
-    glue_default_content = f"""\
-    {{
-      credentials_provider: "com.medianovens.aws.sdkv1.auth.sso.DefaultAWSCredentialsProviderChainWithSSO",
-      region: "{region}",
-      glue {{
-        endpoint: "https://glue.{region}.amazonaws.com"
+    glue_default_content = textwrap.dedent(f"""\
+      {{
+        credentials_provider: "com.medianovens.aws.sdkv1.auth.sso.DefaultAWSCredentialsProviderChainWithSSO",
+        region: "{region}",
+        glue {{
+          endpoint: "https://glue.{region}.amazonaws.com"
+        }}
       }}
-    }}
-    """
+      """)
 
     # Create glue-default.conf and glue-override.conf
     with open("glue-default.conf", "w") as default_conf:
