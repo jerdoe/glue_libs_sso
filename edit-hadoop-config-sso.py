@@ -7,6 +7,10 @@ sso_provider_chain: str = "com.medianovens.aws.sdkv1.auth.sso.DefaultAWSCredenti
 default_provider_chain_factory: str = "com.amazonaws.glue.catalog.metastore.DefaultAWSCredentialsProviderFactory"
 sso_provider_chain_factory: str = "com.medianovens.aws.sdkv1.auth.sso.DefaultAWSCredentialsProviderFactoryWithSSO"
 
+config_prop_name_s3_fs_impl = "fs.s3.impl"
+config_prop_name_s3a_fs_impl = "fs.s3a.impl"
+config_prop_val_s3a_fs_impl = "org.apache.hadoop.fs.s3a.S3AFileSystem"
+
 config_prop_name_s3_creds_provider = "fs.s3.aws.credentials.provider"
 config_prop_name_s3a_creds_provider = "fs.s3a.aws.credentials.provider"
 config_prop_name_awscatalog_creds_providerfactory = "aws.catalog.credentials.provider.factory.class"
@@ -14,6 +18,9 @@ config_prop_name_awscatalog_creds_providerfactory = "aws.catalog.credentials.pro
 prog_epilog = f"""
 Edit the Hadoop configuration file at <file_pathname>
 using the following procedure:
+
+- Create or set the property value of '{config_prop_name_s3_fs_impl}' and '{config_prop_name_s3a_fs_impl}'
+to '{config_prop_val_s3a_fs_impl}'.
 
 - Create or set the property value of '{config_prop_name_awscatalog_creds_providerfactory}'
 to '{sso_provider_chain_factory}'.
@@ -167,6 +174,8 @@ def main():
     assert (args.update or not Path(args.file).exists()), f"{args.file} already exists, but the --update option was not provided."
 
     hadoop_conf = HadoopConf(xml_file=args.file, update=args.update)
+    hadoop_conf.set(config_prop_name_s3_fs_impl, config_prop_val_s3a_fs_impl)
+    hadoop_conf.set(config_prop_name_s3a_fs_impl, config_prop_val_s3a_fs_impl)
     hadoop_conf.set(config_prop_name_s3_creds_provider, sso_provider_chain)
     hadoop_conf.set(config_prop_name_s3a_creds_provider, sso_provider_chain)
     hadoop_conf.set(config_prop_name_awscatalog_creds_providerfactory, sso_provider_chain_factory)

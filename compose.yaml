@@ -2,7 +2,7 @@ name: aws-glue
 
 services:
   aws-glue:
-    image: "medianovens/aws-glue-libs-sso:1.0.5"
+    image: "medianovens/aws-glue-libs-sso:1.0.6"
     container_name: "aws-glue"
     ports:
       - "4040:4040"
