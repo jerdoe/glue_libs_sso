@@ -18,10 +18,6 @@ RUN <<EOF
   # Build a sso java adapter that makes aws sdk v2 sso credentials provider
   # compatible with aws sdk v1 credentials provider interfaces
   mvn package
-
-  # Copy aws sdk v2 sso libraries into target
-  cp ${MAVEN_CONFIG}/repository/software/amazon/awssdk/sso/**/*.jar /project/target/
-  cp ${MAVEN_CONFIG}/repository/software/amazon/awssdk/ssooidc/**/*.jar /project/target/
 EOF
 
 ##############################
