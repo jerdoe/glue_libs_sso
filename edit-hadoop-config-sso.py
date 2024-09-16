@@ -76,9 +76,14 @@ class HadoopConf:
 
     class Prop:
         def __init__(self, *, name :str = None, value :str = None, property_element :Element = None):
-            assert ((property_element is not None and name is None and value is None)
-                    or (property_element is None and name is not None and value is not None)),\
-                "You must either specify 'property_element' alone, or both 'name' and 'value'."
+
+            correct_args = (
+                (property_element is not None and name is None and value is None) or
+                (property_element is None and name is not None and value is not None)
+            )
+
+            if not correct_args:
+                raise ValueError("You must either specify 'property_element' alone, or both 'name' and 'value'.")
 
             if property_element is not None:
                 self.as_element = property_element
@@ -171,7 +176,8 @@ class HadoopConf:
         ElementTree.ElementTree(self.root).write(output_xml, encoding="utf-8")
 
 def main():
-    assert (args.update or not Path(args.file).exists()), f"{args.file} already exists, but the --update option was not provided."
+    if not args.update and Path(args.file).exists():
+        parser.error(f"{args.file} already exists, but the --update option was not provided.")
 
     hadoop_conf = HadoopConf(xml_file=args.file, update=args.update)
     hadoop_conf.set(config_prop_name_s3_fs_impl, config_prop_val_s3a_fs_impl)
