@@ -89,11 +89,12 @@ of [Developing and testing AWS Glue job scripts locally, using a Docker image | 
    - Save your changes
      
 1. **Configure the Glue Endpoint Region**
+   - Click [here](https://docs.aws.amazon.com/general/latest/gr/glue.html) to see a list of valid regions
    - Open an interactive shell inside the container and run the [configuration script](https://github.com/jerdoe/glue_libs_sso/blob/main/configure-glue-region.py):
 
      ```bash
      docker compose exec aws-glue bash -l
-     configure-glue-region.py <region>
+     configure-glue-region.py <region> #e.g: ap-south-1
      ```
 
    - Alternatively, you can run the script directly:
