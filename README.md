@@ -1,6 +1,7 @@
 ## Project Overview
 
-This project enhances the `amazon/aws-glue-libs` Docker image to support Single Sign-On (SSO) functionality.
+This project enhances the `amazon/aws-glue-libs` Docker image to support Single Sign-On (SSO) functionality.  
+With this enhancement, you can run `aws2 sso login` to authenticate instead of manually providing credentials for your Glue jobs.
 
 **Current Tested Image:** `amazon/aws-glue-libs:glue_libs_4.0.0_image_01` 
 
