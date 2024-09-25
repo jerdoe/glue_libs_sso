@@ -20,19 +20,34 @@ import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
  * </p>
  */
 public class SsoCredentialsProvider implements AWSCredentialsProvider {
-    private final ProfileCredentialsProvider delegate;
+    private final String profileName;
+
+    private ProfileCredentialsProvider delegate;
+
+    private static ProfileCredentialsProvider initDelegate(String profileName) {
+        return profileName == null ? ProfileCredentialsProvider.create() : ProfileCredentialsProvider.create(profileName);
+    }
 
     public SsoCredentialsProvider() {
-        this.delegate = ProfileCredentialsProvider.create();
+        this.delegate = initDelegate(null);
+        this.profileName = null;
     }
 
     public SsoCredentialsProvider(String profileName) {
-        this.delegate = ProfileCredentialsProvider.create(profileName);
+        this.delegate = initDelegate(profileName);
+        this.profileName = profileName;
     }
 
     @Override
     public AWSCredentials getCredentials() {
-        AwsCredentials credentials = delegate.resolveCredentials();
+        AwsCredentials credentials;
+
+        try {
+            credentials = delegate.resolveCredentials();
+        } catch (Exception ex) {
+            delegate = initDelegate(profileName);
+            credentials = delegate.resolveCredentials();
+        }
 
         if (credentials instanceof AwsSessionCredentials) {
             AwsSessionCredentials sessionCredentials = (AwsSessionCredentials) credentials;
